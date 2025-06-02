@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mohammad Sadiq - Full Stack Developer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: white;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+            background: rgba(0, 0, 0, 0.8);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #00d4ff, #ff00aa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 5px rgba(0, 212, 255, 0.5)); }
+            to { filter: drop-shadow(0 0 20px rgba(255, 0, 170, 0.5)); }
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: #00d4ff;
+            transform: translateY(-2px);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(45deg, #00d4ff, #ff00aa);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        #threejs-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            max-width: 800px;
+            padding: 0 2rem;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #00d4ff, #ff00aa, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: textShine 3s ease-in-out infinite;
+        }
+
+        @keyframes textShine {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: linear-gradient(45deg, #00d4ff, #ff00aa);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .cta-button:hover::before {
+            left: 100%;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
+        }
+
+        /* Section Styles */
+        .section {
+            padding: 5rem 0;
+            position: relative;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            background: linear-gradient(45deg, #00d4ff, #ff00aa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Skills Section */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .skill-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skill-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, #00d4ff, #ff00aa, #00ff88);
+            transform: translateX(-100%);
+            transition: transform 0.5s ease;
+        }
+
+        .skill-card:hover::before {
+            transform: translateX(0);
+        }
+
+        .skill-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 212, 255, 0.2);
+        }
+
+        .skill-category {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #00d4ff;
+        }
+
+        .skill-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .skill-tag {
+            background: linear-gradient(45deg, rgba(0, 212, 255, 0.2), rgba(255, 0, 170, 0.2));
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .skill-tag:hover {
+            background: linear-gradient(45deg, rgba(0, 212, 255, 0.4), rgba(255, 0, 170, 0.4));
+            transform: scale(1.05);
+        }
+
+        /* Experience Section */
+        .experience-timeline {
+            position: relative;
+            padding-left: 3rem;
+        }
+
+        .experience-timeline::before {
+            content: '';
+            position: absolute;
+            left: 1rem;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, #00d4ff, #ff00aa);
+        }
+
+        .experience-item {
+            position: relative;
+            margin-bottom: 3rem;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .experience-item::before {
+            content: '';
+            position: absolute;
+            left: -2.5rem;
+            top: 2rem;
+            width: 12px;
+            height: 12px;
+            background: #00d4ff;
+            border-radius: 50%;
+            box-shadow: 0 0 20px #00d4ff;
+        }
+
+        .experience-item:hover {
+            transform: translateX(10px);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
+        }
+
+        .project-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #00d4ff;
+        }
+
+        .project-meta {
+            color: #ff00aa;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .project-description {
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .tech-tag {
+            background: linear-gradient(45deg, rgba(0, 255, 136, 0.2), rgba(255, 0, 170, 0.2));
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+
+        /* Contact Section */
+        .contact-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .contact-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(0, 212, 255, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.5s ease;
+            opacity: 0;
+        }
+
+        .contact-card:hover::before {
+            opacity: 1;
+            transform: rotate(45deg) translate(50%, 50%);
+        }
+
+        .contact-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 212, 255, 0.2);
+        }
+
+        .contact-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #00d4ff, #ff00aa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Floating Animation */
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .experience-timeline {
+                padding-left: 2rem;
+            }
+
+            .experience-item::before {
+                left: -1.5rem;
+            }
+        }
+
+        /* Scroll Reveal Animation */
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.6s ease;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Particle Background */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">Mohammad Sadiq</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#experience">Experience</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div id="threejs-container"></div>
+        <div class="hero-content">
+            <h1 class="floating">Mohammad Sadiq</h1>
+            <p>Full Stack Java Developer | Spring Boot Expert | Microservices Architect</p>
+            <p>Crafting scalable enterprise solutions with 3.2+ years of experience</p>
+            <a href="#contact" class="cta-button">Let's Connect</a>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="section">
+        <div class="container">
+            <h2 class="section-title reveal">About Me</h2>
+            <div class="skill-card reveal">
+                <p style="font-size: 1.1rem; line-height: 1.8; text-align: center;">
+                    Passionate Java Developer with expertise in Spring Boot, Microservices, and cloud technologies. 
+                    I specialize in building scalable enterprise applications with modern architectures. 
+                    My experience spans across healthcare and banking domains, delivering high-quality solutions 
+                    that drive business value.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="section">
+        <div class="container">
+            <h2 class="section-title reveal">Technical Expertise</h2>
+            <div class="skills-grid">
+                <div class="skill-card reveal">
+                    <div class="skill-category">Programming Languages</div>
+                    <div class="skill-list">
+                        <span class="skill-tag">Java 1.8</span>
+                        <span class="skill-tag">SQL</span>
+                    </div>
+                </div>
+                
+                <div class="skill-card reveal">
+                    <div class="skill-category">Frameworks & Technologies</div>
+                    <div class="skill-list">
+                        <span class="skill-tag">Spring Boot</span>
+                        <span class="skill-tag">Spring MVC</span>
+                        <span class="skill-tag">Microservices</span>
+                        <span class="skill-tag">Hibernate</span>
+                        <span class="skill-tag">REST APIs</span>
+                    </div>
+                </div>
+                
+                <div class="skill-card reveal">
+                    <div class="skill-category">Database & Messaging</div>
+                    <div class="skill-list">
+                        <span class="skill-tag">MySQL</span>
+                        <span class="skill-tag">Oracle 11g</span>
+                        <span class="skill-tag">MS SQL Server</span>
+                        <span class="skill-tag">Kafka</span>
+                        <span class="skill-tag">JPA</span>
+                    </div>
+                </div>
+                
+                <div class="skill-card reveal">
+                    <div class="skill-category">Tools & Servers</div>
+                    <div class="skill-list">
+                        <span class="skill-tag">Git</span>
+                        <span class="skill-tag">Eclipse</span>
+                        <span class="skill-tag">Tomcat</span>
+                        <span class="skill-tag">WebLogic</span>
+                        <span class="skill-tag">JUnit</span>
+                    </div>
+                </div>
+                
+                <div class="skill-card reveal">
+                    <div class="skill-category">Work History</div>
+                    <div style="background: rgba(0, 212, 255, 0.1); border-radius: 15px; padding: 1.5rem; border: 1px solid rgba(0, 212, 255, 0.3);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <span style="font-weight: bold; color: #00d4ff;">Software Engineer</span>
+                            <span style="color: #ff00aa; font-size: 0.9rem;">Aug 2021 - Oct 2024</span>
+                        </div>
+                        <div style="color: #00ff88; font-weight: 500;">RJ Winsys Technologies</div>
+                        <div style="font-size: 0.9rem; opacity: 0.8; margin-top: 0.5rem;">3.2+ Years of Professional Experience</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Experience Section -->
+    <section id="experience" class="section">
+        <div class="container">
+            <h2 class="section-title reveal">Professional Experience</h2>
+            <div class="experience-timeline">
+                <div class="experience-item reveal">
+                    <div class="project-title">Healthcare System</div>
+                    <div class="project-meta">Cardinal Health, USA | Mar 2023 - Oct 2024</div>
+                    <div class="project-description">
+                        Developed a comprehensive healthcare management system handling patient information, 
+                        billing, and medical records. The system features modular architecture with Patient, 
+                        Doctor, Admin, and Service modules, ensuring seamless interaction through secure RESTful APIs.
+                    </div>
+                    <div class="project-description">
+                        <strong>Key Achievements:</strong>
+                        <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
+                            <li>Built secure RESTful APIs for seamless module interaction</li>
+                            <li>Integrated Kafka for real-time messaging between microservices</li>
+                            <li>Deployed scalable solutions on AWS with Kubernetes orchestration</li>
+                            <li>Developed interactive frontend components using AngularJS</li>
+                            <li>Achieved high code coverage with comprehensive JUnit testing</li>
+                        </ul>
+                    </div>
+                    <div class="tech-stack">
+                        <span class="tech-tag">Spring Boot</span>
+                        <span class="tech-tag">Microservices</span>
+                        <span class="tech-tag">Kafka</span>
+                        <span class="tech-tag">AWS</span>
+                        <span class="tech-tag">Kubernetes</span>
+                        <span class="tech-tag">AngularJS</span>
+                        <span class="tech-tag">MySQL</span>
+                        <span class="tech-tag">JUnit</span>
+                    </div>
+                </div>
+                
+                <div class="experience-item reveal">
+                    <div class="project-title">RBC DTC Banking Platform</div>
+                    <div class="project-meta">Royal Bank of Canada | Aug 2021 - Feb 2023</div>
+                    <div class="project-description">
+                        Developed online web-based banking application with account creation, enrollment, 
+                        and comprehensive banking features. Integrated with Modern Banking Platform (MBP) 
+                        and Identity Provider (IDP) for secure authentication and operations.
+                    </div>
+                    <div class="project-description">
+                        <strong>Key Contributions:</strong>
+                        <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
+                            <li>Implemented Spring IOC, MVC, and RESTful web services</li>
+                            <li>Developed multilingual corporate websites with responsive UI</li>
+                            <li>Created Service and DAO layers with comprehensive implementations</li>
+                            <li>Deployed applications through Jenkins for continuous integration</li>
+                            <li>Conducted code reviews and maintained high code quality standards</li>
+                        </ul>
+                    </div>
+                    <div class="tech-stack">
+                        <span class="tech-tag">Java/J2EE</span>
+                        <span class="tech-tag">Spring</span>
+                        <span class="tech-tag">Hibernate</span>
+                        <span class="tech-tag">REST APIs</span>
+                        <span class="tech-tag">Oracle 11g</span>
+                        <span class="tech-tag">Jenkins</span>
+                        <span class="tech-tag">Maven</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="section">
+        <div class="container">
+            <h2 class="section-title reveal">Get In Touch</h2>
+            <div class="contact-info">
+                <div class="contact-card reveal">
+                    <div class="contact-icon">✉</div>
+                    <h3>Email</h3>
+                    <p>md.sadiq24.m@gmail.com</p>
+                </div>
+                
+                <div class="contact-card reveal">
+                    <div class="contact-icon">📱</div>
+                    <h3>Phone</h3>
+                    <p>+91 7760243545</p>
+                </div>
+                
+                <div class="contact-card reveal">
+                    <div class="contact-icon">🎓</div>
+                    <h3>Education</h3>
+                    <p>B.E (CSE)<br>CMR Institute of Technology<br>2021</p>
+                </div>
+                
+                <div class="contact-card reveal">
+                    <div class="contact-icon">💼</div>
+                    <h3>Experience</h3>
+                    <p>Software Engineer at RJ Winsys Technologies<br>Aug 2021 - Oct 2024<br>3.2+ Years</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Three.js 3D Background
+        let scene, camera, renderer, particles;
+
+        function initThreeJS() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0x000000, 0);
+            
+            document.getElementById('threejs-container').appendChild(renderer.domElement);
+
+            // Create particle system
+            const particleCount = 1000;
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+
+            for (let i = 0; i < particleCount * 3; i += 3) {
+                positions[i] = (Math.random() - 0.5) * 200;
+                positions[i + 1] = (Math.random() - 0.5) * 200;
+                positions[i + 2] = (Math.random() - 0.5) * 200;
+
+                const color = new THREE.Color();
+                color.setHSL(Math.random() * 0.3 + 0.5, 0.7, 0.5);
+                colors[i] = color.r;
+                colors[i + 1] = color.g;
+                colors[i + 2] = color.b;
+            }
+
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+            const material = new THREE.PointsMaterial({
+                size: 2,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8
+            });
+
+            particles = new THREE.Points(geometry, material);
+            scene.add(particles);
+
+            camera.position.z = 50;
+
+            animate();
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            particles.rotation.x += 0.001;
+            particles.rotation.y += 0.002;
+            
+            const positions = particles.geometry.attributes.position.array;
+            for (let i = 0; i < positions.length; i += 3) {
+                positions[i + 1] += Math.sin(Date.now() * 0.001 + positions[i]) * 0.01;
+            }
+            particles.geometry.attributes.position.needsUpdate = true;
+
+            renderer.render(scene, camera);
+        }
+
+        // Scroll reveal animation
+        function reveal() {
+            const reveals = document.querySelectorAll('.reveal');
+            
+            for (let i = 0; i < reveals.length; i++) {
+                const windowHeight = window.innerHeight;
+                const elementTop = reveals[i].getBoundingClientRect().top;
+                const elementVisible = 150;
+                
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add('active');
+                }
+            }
+        }
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.style.background = 'rgba(0, 0, 0, 0.95)';
+            } else {
+                navbar.style.background = 'rgba(0, 0, 0, 0.8)';
+            }
+            reveal();
+        });
+
+        // Mouse move effect for hero section
+        document.addEventListener('mousemove', (e) => {
+            const cursor = document.querySelector('.hero-content');
+            if (cursor) {
+                const x = e.clientX / window.innerWidth;
+                const y = e.clientY / window.innerHeight;
+                cursor.style.transform = `translate(${x * 10 - 5}px, ${y * 10 - 5}px)`;
+            }
+        });
+
+        // Initialize
+        window.addEventListener('load', () => {
+            initThreeJS();
+            reveal();
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Add typing effect to hero text
+        function typeWriter(element, text, speed = 100) {
+            let i = 0;
+            element.innerHTML = '';
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                }
+            }
+            type();
+        }
+
+        // Skill cards hover effect
+        document.querySelectorAll('.skill-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-10px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Add glitch effect to logo
+        const logo = document.querySelector('.logo');
+        setInterval(() => {
+            logo.style.textShadow = `
+                ${Math.random() * 10}px ${Math.random() * 10}px 0 #00d4ff,
+                ${Math.random() * -10}px ${Math.random() * 10}px 0 #ff00aa
+            `;
+            setTimeout(() => {
+                logo.style.textShadow = 'none';
+            }, 100);
+        }, 3000);
+    </script>
+</body>
+</html>
